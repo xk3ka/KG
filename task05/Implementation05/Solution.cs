@@ -25,7 +25,7 @@ namespace Implementation05
             Random rnd = new Random();
             for(int i = 0; i <= Elements.Length-1; i++)
             {
-                Elements[i] = new Element(100, 20 + i * 40, rnd.Next(0, 100), Color.Black);
+                Elements[i] = new Element(20 + i * 40, 60, rnd.Next(0, 100), Color.Black);
             }
         }
 
@@ -33,8 +33,8 @@ namespace Implementation05
         {
             for (var i = 0; i < Elements.Length / 2; i++)
             {
-                var swapFlag = false;
-                //проход слева направо
+                bool swapFlag = false;
+
                 for (var j = i; j < Elements.Length - i - 1; j++)
                 {
                     if (Elements[j].Value > Elements[j + 1].Value)
@@ -45,7 +45,6 @@ namespace Implementation05
                     }
                 }
 
-                //проход справа налево
                 for (var j = Elements.Length - 2 - i; j > i; j--)
                 {
                     if (Elements[j - 1].Value > Elements[j].Value)
@@ -56,16 +55,12 @@ namespace Implementation05
                     }
                 }
 
-                //если обменов не было выходим
                 if (!swapFlag)
                 {
                     break;
                 }
             }
         }
-
-        //Change(j, j - 1, i, j);
-        //Swap(i - 1, i);
 
         private void Swap(int i, int j)
         {
@@ -79,21 +74,21 @@ namespace Implementation05
             Elements[n1].Color = Color.Red;
             Elements[n2].Color = Color.Red;
             int x1 = Elements[n1].X;
+            int x2 = Elements[n2].X;
             int y1 = Elements[n1].Y;
-            int y2 = Elements[n2].Y;
-            double x;
+            double y;
             for (int t = 1; t <= 15; t++)
             {
-                x = (y2 - y1) * t / 15;
-                Elements[n1].Y = y1 + (int)(x);
+                y = (x2 - x1) * t / 15;
+                Elements[n1].X = x1 + (int)(y);
                 switch (t)
                 {
                     case 1:
                     case 2:
                     case 3:
                     case 4:
-                        x = 40 * t / 4;
-                        Elements[n2].X = x1 - (int)(x);
+                        y = 40 * t / 4;
+                        Elements[n2].Y = y1 - (int)(y);
                         break;
                     case 5:
                     case 6:
@@ -102,18 +97,18 @@ namespace Implementation05
                     case 9:
                     case 10:
                     case 11:
-                        x = (y1 - y2) * (t - 4) / 7;
-                        Elements[n2].Y = y2 + (int)(x);
+                        y = (x1 - x2) * (t - 4) / 7;
+                        Elements[n2].X = x2 + (int)(y);
                         break;
                     case 12:
                     case 13:
                     case 14:
                     case 15:
-                        x = 40 * (t - 11) / 4;
-                        Elements[n2].X = (int)(x1 - 40 + x);
+                        y = 40 * (t - 11) / 4;
+                        Elements[n2].Y = (int)(y1 - 40 + y);
                         break;
                 }
-                Thread.Sleep(8);
+                Thread.Sleep(15);
                 Paint(n, m);
             }
             Elements[n1].Color = Color.Black;
@@ -126,9 +121,9 @@ namespace Implementation05
             const int d = 15;
             string s;
             SizeF size;
-            DataForm.GBitmap.Clear(Color.White);
+            DataForm.GBitmap.Clear(Color.Pink);
             Pen pen = new Pen(Color.Black);
-            Font font = new Font("Courier New", 12);
+            Font font = new Font("Times New Roman", 12);
             for (int i = 0; i < Elements.Length; i++)
             {
                 pen.Color = Elements[i].Color;
@@ -146,8 +141,7 @@ namespace Implementation05
 
                 s = "I = " + Convert.ToString(n);
                 size = DataForm.GBitmap.MeasureString(s, font);
-                DataForm.GBitmap.DrawString(s, font, Brushes.Black, 220,
-                Elements[n].Y - size.Height / 2);
+                DataForm.GBitmap.DrawString(s, font, Brushes.Black, Elements[n].X - size.Height / 2, 80);
             }
             if (m != -1)
             {
@@ -155,8 +149,7 @@ namespace Implementation05
 
                 s = "J = " + Convert.ToString(m);
                 size = DataForm.GBitmap.MeasureString(s, font);
-                DataForm.GBitmap.DrawString(s, font, Brushes.Black, 260,
-                Elements[m].Y - size.Height / 2);
+                DataForm.GBitmap.DrawString(s, font, Brushes.Black, Elements[m].X - size.Height / 2, 100);
             }
             DataForm.GScreen.DrawImage(DataForm.Bitmap, DataForm.ClientRectangle);
         }
