@@ -39,7 +39,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayUtils.cs" />
+    <Compile Include="Painter.cs" />
+    <Compile Include="Solution.cs" />
     <Compile Include="Element.cs" />
   </ItemGroup>
   <ItemGroup>

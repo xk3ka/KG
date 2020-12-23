@@ -9,13 +9,10 @@ namespace Implementation05
 {
     public class Element
     {
-        public int X { get; set; }
-
-        public int Y { get; set; }
-
-        public int Value { get; set; }
-
-        public Color Color { get; set; }
+        public int X;
+        public int Y;
+        public int Value;
+        public Color Color;
 
         public Element(int x, int y, int value, Color color)
         {
