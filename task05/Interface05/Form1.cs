@@ -48,8 +48,8 @@ namespace Interface05
             button1.Enabled = false;
             button2.Enabled = false;
             solution.Sort();
-            button1.Enabled = false;
-            button2.Enabled = false;
+            button1.Enabled = true;
+            button2.Enabled = true;
         }
     }
 }
