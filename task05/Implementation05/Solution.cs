@@ -3,141 +3,97 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Implementation05
 {
     public class Solution
     {
-        const int DEFAULT_SIZE = 10;
+        public Element[] Elements { get; set; }
 
-        private readonly Random rnd = new Random();
+        public Data DataForm { get; set; }
 
-        public Element[] Data { get; set; }
-
-        public Painter painter { get; set; }
-
-        public Graphics GBitmap { get; set; }
-
-        public Graphics GScreen { get; set; }
-
-        public Bitmap Bitmap { get; set; }
-
-        public Solution(Graphics gbitmap, Graphics gscreen, Bitmap bitmap)
+        public Solution(Data dataform)
         {
-            GBitmap = gbitmap;
-            GScreen = gscreen;
-            Bitmap = bitmap;
-            Data = new Element[DEFAULT_SIZE];
-            Generate();
+            DataForm = dataform;
         }
 
-        public Solution(int length)
+        public void Generate(int length)
         {
-            Data = new Element[length];
-            Generate();
-        }
-
-        public Solution(params int[] array)
-        {
-            Data = new Element[array.Length];
-            Load(array);
-        }
-
-        private void Generate()
-        {
-            for (int i = 0; i < Data.Length; i++)
+            Elements = new Element[length];
+            Random rnd = new Random();
+            for(int i = 0; i <= Elements.Length-1; i++)
             {
-                Data[i] = new Element(20 + i * 40, 100, rnd.Next(0, 100), Color.Black);
-            }
-        }
-
-        private void Load(int[] array)
-        {
-            for (int i = 0; i < Data.Length; i++)
-            {
-                Data[i] = new Element(20 + i * 40, 100, rnd.Next(0, 100), Color.Black);
+                Elements[i] = new Element(100, 20 + i * 40, rnd.Next(0, 100), Color.Black);
             }
         }
 
         public void Sort()
         {
-            painter = new Painter(Data, GBitmap, GScreen, Bitmap);
-            int leftSite = 0;
-            int rightSite = Data.Length - 1;
-            bool sortedFront = false;
-            bool sortedBack = false;
-            int last = 0;
-            while (leftSite < rightSite)
+            for (var i = 0; i < Elements.Length / 2; i++)
             {
-                sortedFront = false;
-                for (int index = leftSite; index < rightSite; index++)
+                var swapFlag = false;
+                //проход слева направо
+                for (var j = i; j < Elements.Length - i - 1; j++)
                 {
-                    if (Data[index].Value > Data[index + 1].Value)
+                    if (Elements[j].Value > Elements[j + 1].Value)
                     {
-                        Swap(index, index + 1);
-                        sortedFront = true;
-                        last = index;
+                        Change(j, j + 1, i, j);
+                        Swap(j, j + 1);
+                        swapFlag = true;
                     }
                 }
-                rightSite = last;
-                if (!sortedFront && !sortedBack) break;
-                sortedBack = false;
-                for (int index = rightSite; index > leftSite; index--)
+
+                //проход справа налево
+                for (var j = Elements.Length - 2 - i; j > i; j--)
                 {
-                    if (Data[index].Value < Data[index - 1].Value)
+                    if (Elements[j - 1].Value > Elements[j].Value)
                     {
-                        Swap(index, index - 1);
-                        sortedBack = true;
-                        last = index;
+                        Change(j, j - 1, i, j);
+                        Swap(j - 1, j);
+                        swapFlag = true;
                     }
                 }
-                leftSite = last;
-                if (!sortedFront) break;
+
+                //если обменов не было выходим
+                if (!swapFlag)
+                {
+                    break;
+                }
             }
         }
 
+        //Change(j, j - 1, i, j);
+        //Swap(i - 1, i);
+
         private void Swap(int i, int j)
         {
-            Change(j, j - 1, i, j);
-            int tmp = Data[i].Value;
-            Data[i] = Data[j];
-            Data[j].Value = tmp;
+            Element tmp = Elements[i];
+            Elements[i] = Elements[j];
+            Elements[j] = tmp;
         }
 
         private void Change(int n1, int n2, int n, int m)
         {
-            Data[n1].Color = Color.Red;
-            Data[n2].Color = Color.Red;
-
-            int x1 = Data[n1].X;
-            int y1 = Data[n1].Y;
-            int x2 = Data[n2].X;
-            int y2 = Data[n2].Y;
-
-            double y;
-
-            //double x;
-
+            Elements[n1].Color = Color.Red;
+            Elements[n2].Color = Color.Red;
+            int x1 = Elements[n1].X;
+            int y1 = Elements[n1].Y;
+            int y2 = Elements[n2].Y;
+            double x;
             for (int t = 1; t <= 15; t++)
             {
-                y = (x2 - x1) * t / 15;
-               // x = (y2 - y1) * t / 15;
-
-                Data[n1].X = x1 + (int)(y);
-
-               // Data[n1].Y = y1 + (int)(x);
-
+                x = (y2 - y1) * t / 15;
+                Elements[n1].Y = y1 + (int)(x);
                 switch (t)
                 {
                     case 1:
                     case 2:
                     case 3:
                     case 4:
-                        y = 40 * t / 4;
-                        // x = 40 * t / 4;
-                        Data[n2].Y = y1 - (int)(y);
-                       // Data[n2].X = x1 - (int)(x);
+                        x = 40 * t / 4;
+                        Elements[n2].X = x1 - (int)(x);
                         break;
                     case 5:
                     case 6:
@@ -146,32 +102,63 @@ namespace Implementation05
                     case 9:
                     case 10:
                     case 11:
-                        y = (x1 - x2) * (t - 4) / 7;
-                        Data[n2].X = x2 + (int)(y);
-
-                       // x = (y1 - y2) * (t - 4) / 7;
-                       // Data[n2].Y = y2 + (int)(x);
+                        x = (y1 - y2) * (t - 4) / 7;
+                        Elements[n2].Y = y2 + (int)(x);
                         break;
                     case 12:
                     case 13:
                     case 14:
                     case 15:
-                        y = 40 * (t - 11) / 4;
-                        Data[n2].Y = y1 - 40 + (int)(y);
-
-                       // x = 40 * (t - 11) / 4;
-                       // Data[n2].X = x1 - 40 + (int)x;
+                        x = 40 * (t - 11) / 4;
+                        Elements[n2].X = (int)(x1 - 40 + x);
                         break;
                 }
-                painter.Paint(n, m);
-                //Drawing(n, m);
+                Thread.Sleep(8);
+                Paint(n, m);
             }
+            Elements[n1].Color = Color.Black;
+            Elements[n2].Color = Color.Black;
+            Paint(n, m);
+        }
 
-            Data[n1].Color = Color.Red;
-            Data[n2].Color = Color.Red;
-            painter.Paint(n, m);
-            //Drawing(n, m);
+        public void Paint(int n, int m)
+        {
+            const int d = 15;
+            string s;
+            SizeF size;
+            DataForm.GBitmap.Clear(Color.White);
+            Pen pen = new Pen(Color.Black);
+            Font font = new Font("Courier New", 12);
+            for (int i = 0; i < Elements.Length; i++)
+            {
+                pen.Color = Elements[i].Color;
+                DataForm.GBitmap.DrawEllipse(pen, Elements[i].X - d,
+                Elements[i].Y - d, 2 * d, 2 * d);
+                s = Convert.ToString(Elements[i].Value);
+                size = DataForm.GBitmap.MeasureString(s, font);
+                DataForm.GBitmap.DrawString(s, font, Brushes.Black,
+                Elements[i].X - size.Width / 2,
+                Elements[i].Y - size.Height / 2);
+            }
+            if (n != -1)
+            {
+                pen.Color = Color.Black;
 
+                s = "I = " + Convert.ToString(n);
+                size = DataForm.GBitmap.MeasureString(s, font);
+                DataForm.GBitmap.DrawString(s, font, Brushes.Black, 220,
+                Elements[n].Y - size.Height / 2);
+            }
+            if (m != -1)
+            {
+                pen.Color = Color.Red;
+
+                s = "J = " + Convert.ToString(m);
+                size = DataForm.GBitmap.MeasureString(s, font);
+                DataForm.GBitmap.DrawString(s, font, Brushes.Black, 260,
+                Elements[m].Y - size.Height / 2);
+            }
+            DataForm.GScreen.DrawImage(DataForm.Bitmap, DataForm.ClientRectangle);
         }
     }
 }

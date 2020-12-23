@@ -13,15 +13,11 @@ namespace Interface05
 {
     public partial class Form1 : Form
     {
-        Graphics gBitmap { get; set; }
+        public Bitmap bitmap;
 
-        Graphics gScreen { get; set; }
+        public Graphics gBitmap;
 
-        Bitmap bitmap { get; set; }
-
-        Solution solution { get; set; }
-
-        Painter painter { get; set; }
+        public Graphics gScreen;
 
         public Form1()
         {
@@ -36,27 +32,13 @@ namespace Interface05
             gBitmap = Graphics.FromImage(bitmap);
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-            MyDraw();
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
-            solution = new Solution(gBitmap,gScreen,bitmap);
-        }
+            //solution.Sort();
 
-        private void button2_Click(object sender, EventArgs e)
-        {
+            Solution solution = new Solution(new Data(gBitmap,gScreen,bitmap,ClientRectangle));
+            solution.Generate(10);
             solution.Sort();
-        }
-
-        private void MyDraw()
-        {
-
-            gBitmap.Dispose();
-            gScreen.Dispose();
-            bitmap.Dispose();
         }
     }
 }
